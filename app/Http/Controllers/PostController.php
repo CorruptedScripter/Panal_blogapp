@@ -12,7 +12,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::latest()->paginate(5);
+        $posts = auth()->user()->posts()->latest()->paginate(5);
         return view('posts.index', compact('posts'));
     }
 
@@ -34,7 +34,7 @@ class PostController extends Controller
             'body' => 'required',
         ]);
 
-        Post::create($request->all());
+        $request->user()->posts()->create($request->all());
 
         return redirect()->route('posts.index')
             ->with('success', 'Post created successfully.');
@@ -45,6 +45,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
+        $this->authorize('view', $post);
         return view('posts.show', compact('post'));
     }
 
